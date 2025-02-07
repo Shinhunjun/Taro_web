@@ -290,32 +290,50 @@
         document.getElementById("userQuestion").addEventListener("input", async function() {
             const q = this.value.trim();
             const buttons = document.querySelectorAll(".card-btn");
-            if (q !== "") {
-                buttons.forEach(btn => btn.removeAttribute("disabled"));
-            } else {
-                buttons.forEach(btn => {
-                    btn.setAttribute("disabled", true);
-                });
-                // Reset session and reload page only when question is empty
-                const response = await fetch('/reset', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                if (response.ok) {
-                    document.getElementById("userQuestion").value = ""; // 입력 필드 값 초기화
-                    window.location.reload();
-                } else {
-                    console.error('세션 초기화 실패');
+            
+            // Count drawn cards by checking if an image's src contains "/cards/"
+            let drawnCount = 0;
+            document.querySelectorAll(".card-container").forEach(container => {
+                const img = container.querySelector("img");
+                if (img && img.src.indexOf("/cards/") !== -1) {
+                    drawnCount++;
                 }
-                return; // Exit the function to prevent further execution
+            });
+    
+            if (q === "") {
+                // Disable card buttons when input is empty.
+                buttons.forEach(btn => btn.setAttribute("disabled", true));
+    
+                // Reset session only when at least one card has been drawn.
+                if (drawnCount > 0) {
+                    const response = await fetch('/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    if (response.ok) {
+                        document.getElementById("userQuestion").value = "";
+                        window.location.reload();
+                    } else {
+                        console.error('세션 초기화 실패');
+                    }
+                }
+                return;
+            } else {
+                // When q is not empty, simply enable buttons if no card is drawn.
+                if (drawnCount === 0) {
+                    buttons.forEach(btn => btn.removeAttribute("disabled"));
+                }
             }
+            
+            // Update the question in session state.
             await fetch('/set-question', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: q })
             });
         });
-    
+    </script>
+    <script>
 
         // Intercept form submission for interpretation
         document.getElementById("interpretForm").addEventListener("submit", async function(e) {
