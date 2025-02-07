@@ -20,8 +20,8 @@ app.use(session({
 }));
 
 // Tarot data & cards folder
-const tarotJsonPath = "/Users/hunjunsin/Desktop/taro/tarot-images.json";
-const cardsFolder = "/Users/hunjunsin/Desktop/taro/cards";
+const tarotJsonPath = path.join(__dirname, "tarot-images.json");
+const cardsFolder = path.join(__dirname, "cards");
 const tarotData = JSON.parse(fs.readFileSync(tarotJsonPath, 'utf8'));
 const allCards = tarotData["cards"];
 
