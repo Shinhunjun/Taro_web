@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>타로 해석</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Adsense header -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6885920070996702" crossorigin="anonymous"></script>
+    <!-- Add these new Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Song+Myung&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #121212; 
+            color: #e0e0e0; 
+            font-family: 'Noto Serif KR', serif;
+        }
+        .card-container {
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .card-btn { 
+            background: #2d3436;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .card-btn:hover:not(:disabled) { 
+            background: #434c4e;
+            transform: translateY(-2px);
+        }
+        .card-btn:disabled {
+            opacity: 0.5;
+        }
+        .card-img { 
+            width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+            transition: transform 0.3s ease;
+        }
+        .question-input {
+            width: calc(600px + 80px); /* 카드 3개(200px * 3) + gap 간격(40px * 2) */
+            max-width: 90%;
+            background: rgba(30, 30, 30, 0.6);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 0 auto;
+            display: block;
+        }
+        /* 카드 이름은 강조 색상 지정 */
+        .card-name {
+            color: #ffcc00;  /* 예: 노란색 계열 */
+        }
+        .interpret-btn {
+            background: #6c5ce7;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .interpret-btn:hover:not(:disabled) {
+            background: #5f3dc4;
+            transform: translateY(-2px);
+        }
+        .loading-text {
+            color: #a29bfe;
+            font-style: italic;
+        }
+        .interpretation-container {
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .main-title {
+            font-family: 'Song Myung', serif;
+            font-size: 3.2rem;
+            text-shadow: 2px 2px 4px rgba(108, 92, 231, 0.5),
+                         -2px -2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.1em;
+            line-height: 1.5;
+            background: linear-gradient(120deg, #e0e0e0, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .emoji-original {
+            -webkit-text-fill-color: initial;
+            color: inherit;
+        }
+
+        .question-input {
+            width: 100%;
+            max-width: 800px;  /* 최대 너비를 늘립니다 */
+            height: 50px;      /* 높이를 늘려 가독성을 확보 */
+            font-size: 1.2rem; /* 폰트 크기 증가 */
+            background: rgba(255, 255, 255, 0.1); /* 약간 더 밝은 배경 */
+            border: 1px solid #aaa;
+            color: #e0e0e0;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .non-transparent {
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: red !important;
+            background: none;
+            color: red;
+          }
+
+        /* Media queries for mobile responsiveness */
+        @media (max-width: 576px) {
+            .question-input {
+                max-width: 90%;  /* Decrease the max-width on small screens */
+                font-size: 1rem; /* Slightly smaller font-size */
+                height: 45px;
+                padding: 8px 10px;
+            }
+            .card-img {
+                width: 150px;   /* Adjust card image size */
+            }
+            .interpret-btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            .main-title {
+                font-size: 2.5rem;
+            }
+            .card-container {
+                padding: 15px;
+            }
+            .non-transparent {
+                background: none !important;
+                background-clip: border-box !important;
+                -webkit-background-clip: border-box !important;
+                -webkit-text-fill-color: red !important;
+                color: red !important;
+            }
+        }
+    </style>
+</head>
+<body class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="main-title">
+            <span class="emoji-original">🔮</span> 
+            <span class="non-transparent">카드</span>를 뽑는것 조차... 너의 <span class="non-transparent">선택</span>일텐데...
+          </h1>
+        <hr class="my-4">
+    </div>
+
+    <!-- Top Advertisement -->
+    <div class="text-center mb-5">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-6885920070996702"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+<!-- Question Form -->
+<div class="text-center mb-5">
+    <form id="interpretForm">
+        <input type="text" 
+               id="userQuestion" 
+               class="question-input" 
+               placeholder="예: 나의 진로는 어떻게 될까요?"
+               value="<%= question ? question : '' %>">
+    </form>
+    <p class="mt-2" style="font-size: 1rem; color: #fff; font-weight: bold; background-color: rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 5px;">
+        질문을 먼저 입력하고 밑에서 3장의 카드를 각각 뽑아주세요.
+    </p>
+</div>
+
+    <!-- Cards Section -->
+    <div class="row justify-content-center g-4 mb-5">
+        <!-- Past Card -->
+        <div class="col-md-4 text-center">
+            <div class="card-container">
+            <% if (past) { %>
+                <img src="/cards/<%= past.img %>" alt="<%= past.name %>" class="card-img mb-3">
+                <p class="h5 card-name"><%= past.name %></p>
+            <% } else { %>
+                <!-- Placeholder image before drawing -->
+                <img src="/taro.jpg" alt="?" class="card-img mb-3">
+                <form action="/draw-card/past" method="get">
+                    <button class="card-btn" type="submit" <% if (!question) { %>disabled<% } %>>
+                        과거 카드 뽑기
+                    </button>
+                </form>
+            <% } %>
+            </div>
+        </div>
+        
+        <!-- Present Card -->
+        <div class="col-md-4 text-center">
+            <div class="card-container">
+            <% if (present) { %>
+                <img src="/cards/<%= present.img %>" alt="<%= present.name %>" class="card-img mb-3">
+                <p class="h5 card-name"><%= present.name %></p>
+            <% } else { %>
+                <!-- Placeholder image before drawing -->
+                <img src="/taro.jpg" alt="?" class="card-img mb-3">
+                <form action="/draw-card/present" method="get">
+                    <button class="card-btn" type="submit" <% if (!question) { %>disabled<% } %>>
+                        현재 카드 뽑기
+                    </button>
+                </form>
+            <% } %>
+            </div>
+        </div>
+        
+        <!-- Future Card -->
+        <div class="col-md-4 text-center">
+            <div class="card-container">
+            <% if (future) { %>
+                <img src="/cards/<%= future.img %>" alt="<%= future.name %>" class="card-img mb-3">
+                <p class="h5 card-name"><%= future.name %></p>
+            <% } else { %>
+                <!-- Placeholder image before drawing -->
+                <img src="/taro.jpg" alt="?" class="card-img mb-3">
+                <form action="/draw-card/future" method="get">
+                    <button class="card-btn" type="submit" <% if (!question) { %>disabled<% } %>>
+                        미래 카드 뽑기
+                    </button>
+                </form>
+            <% } %>
+            </div>
+        </div>
+    <!-- Interpretation Button -->
+    <div class="text-center mb-5">
+        <button form="interpretForm" 
+                id="interpretBtn" 
+                class="interpret-btn" 
+                <% if (!(question && past && present && future)) { %>disabled<% } %>>
+            타로 카드 해석하기
+        </button>
+    </div>
+
+    <!-- Interpretation Results -->
+    <div id="interpretation-container" class="interpretation-container" style="display:none">
+        <!-- Results will be inserted here via JavaScript -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-5">
+        <p class="text-muted small">본 서비스는 Google 애드센스를 통해 광고를 제공합니다</p>
+        <p class="text-muted small">
+            <a href="/privacy" class="text-muted">개인정보처리방침</a> | 
+            <a href="/terms" class="text-muted">이용약관</a>
+        </p>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Automatically keep question in session
+        document.getElementById("userQuestion").addEventListener("input", function() {
+            const q = this.value.trim();
+            const buttons = document.querySelectorAll(".card-btn");
+            if (q !== "") {
+                buttons.forEach(btn => btn.removeAttribute("disabled"));
+            } else {
+                buttons.forEach(btn => btn.setAttribute("disabled", true));
+            }
+            fetch('/set-question', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: q })
+            });
+        });
+
+        // Intercept form submission for interpretation
+        document.getElementById("interpretForm").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const container = document.getElementById("interpretation-container");
+            container.style.display = "block";  // 컨테이너를 보이게 설정
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-light" role="status"></div>
+                    <p class="mt-3 loading-text">당신의 길을 찾는중입니다...</p>
+                </div>
+            `;
+            
+            const btn = document.getElementById("interpretBtn");
+            btn.disabled = true;
+            
+            try {
+                const question = document.getElementById("userQuestion").value.trim();
+                const response = await fetch('/interpret', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+                
+                const data = await response.json();
+                
+                if (data.interpretation) {
+                    container.innerHTML = `
+                    <h2 class="text-center mb-4">✨ 타로 카드 해석</h2>
+                    <div class="interpretation-text">
+                        <p class="mb-3"><strong>질문:</strong> ${question}</p>
+                        <p style="white-space: pre-line">${data.interpretation}</p>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button id="newQuestionBtn" class="interpret-btn">새로운 질문하기</button>
+                    </div>
+                `;
+                // Add event listener for the reset button
+                document.getElementById("newQuestionBtn").addEventListener("click", async function() {
+                    // Call /reset to clear session values
+                    await fetch('/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    // Reload the page to start over
+                    window.location.reload();
+                });
+                } else {
+                    container.innerHTML = `
+                        <div class="alert alert-danger">
+                            죄송합니다. 타로 해석을 받아오지 못했습니다. 다시 시도해 주세요.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-danger">
+                        서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
