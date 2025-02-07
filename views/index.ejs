@@ -286,11 +286,16 @@
                     btn.setAttribute("disabled", true);
                 });
                 // Reset session and reload page only when question is empty
-                await fetch('/reset', {
+                const response = await fetch('/reset', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                window.location.reload();
+                if (response.ok) {
+                    document.getElementById("userQuestion").value = ""; // 입력 필드 값 초기화
+                    window.location.reload();
+                } else {
+                    console.error('세션 초기화 실패');
+                }
                 return; // Exit the function to prevent further execution
             }
             await fetch('/set-question', {

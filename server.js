@@ -278,6 +278,16 @@ app.post('/test-api', async (req, res) => {
     }
 });
 
+app.post('/reset', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('세션 삭제 실패:', err);
+        return res.status(500).send('세션 삭제 실패');
+      }
+      res.status(200).send('세션 삭제 성공');
+    });
+  });
+  
 // POST /set-question
 app.post('/set-question', (req, res) => {
     req.session.question = req.body.question?.trim() || '';
