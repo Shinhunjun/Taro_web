@@ -123,22 +123,28 @@
           }
 
         /* Media queries for mobile responsiveness */
+        
         @media (max-width: 576px) {
-            .question-input {
-                max-width: 90%;  /* Decrease the max-width on small screens */
-                font-size: 1rem; /* Slightly smaller font-size */
-                height: 45px;
-                padding: 8px 10px;
+            .main-title {
+                font-size: 2.2rem;       /* Reduce title font size */
+                margin-bottom: 0.5rem;   /* Decrease gap after title */
             }
-            .card-img {
-                width: 150px;   /* Adjust card image size */
+            .question-input {
+                max-width: 90%;          /* Remains responsive */
+                font-size: 1rem;         /* Slightly smaller font-size */
+                height: 45px;            /* Adjust height */
+                padding: 8px 10px;       /* Adjust internal spacing */
+                margin-top: 0.5rem;      /* Add a small top margin if needed */
+            }
+            .mb-5 {
+                margin-bottom: 1.5rem !important;  /* Reduce vertical gap for containers using mb-5 */
             }
             .interpret-btn {
                 padding: 10px 20px;
                 font-size: 1rem;
             }
-            .main-title {
-                font-size: 2.5rem;
+            .card-img {
+                width: 150px;   /* Adjust card image size */
             }
             .card-container {
                 padding: 15px;
@@ -149,10 +155,6 @@
                 -webkit-background-clip: border-box !important;
                 -webkit-text-fill-color: red !important;
                 color: red !important;
-            }
-            /* Add this new style */
-            .mb-5 {
-                margin-bottom: 2rem !important; /* Adjust the value as needed */
             }
         }
     </style>
