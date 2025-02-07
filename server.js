@@ -20,8 +20,8 @@ app.use(session({
 }));
 
 // Tarot data & cards folder
-const tarotJsonPath = path.join(__dirname, "tarot-images.json");
-const cardsFolder = path.join(__dirname, "cards");
+const tarotJsonPath = "/Users/hunjunsin/Desktop/taro/tarot-images.json";
+const cardsFolder = "/Users/hunjunsin/Desktop/taro/cards";
 const tarotData = JSON.parse(fs.readFileSync(tarotJsonPath, 'utf8'));
 const allCards = tarotData["cards"];
 
@@ -69,22 +69,16 @@ function getRandomMeaning(card) {
     // Randomly choose between light and shadow meanings
     const type = Math.random() < 0.5 ? 'light' : 'shadow';
     const meanings = card.meanings[type] || [];
-    
-    function getTwoRandomMeanings(meanings) {
-        if (meanings.length <= 2) {
-            return meanings;
-        }
-        const shuffled = meanings.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, 2);
+    if (meanings.length) {
+        const randomMeaning = meanings[Math.floor(Math.random() * meanings.length)];
+        return {
+            type: type,
+            meaning: randomMeaning
+        };
     }
-
-    const selectedMeanings = getTwoRandomMeanings(meanings);
-
-    return {
-        type: type,
-        meanings: selectedMeanings
-    };
+    return { type: "unknown", meaning: "의미를 찾을 수 없습니다." };
 }
+
 app.post('/interpret', async (req, res) => {
     console.log("Interpretation request received");
     
@@ -107,6 +101,8 @@ app.post('/interpret', async (req, res) => {
         }
 
         const deepseek_api_key = process.env.DEEPSEEK_API_KEY;
+        console.log("Starting interpretation process with API key:", deepseek_api_key.substring(0, 5) + "...");
+        
         const pastMeaning = getRandomMeaning(req.session.past);
         const presentMeaning = getRandomMeaning(req.session.present);
         const futureMeaning = getRandomMeaning(req.session.future);
@@ -114,13 +110,13 @@ app.post('/interpret', async (req, res) => {
 
 [타로 카드]
 과거 카드: ${req.session.past.name}
-과거 카드 의미 ("${pastMeaning.meanings.join(', ')}")
+과거 카드 의미 ("${pastMeaning.meaning}"
 
 현재 카드: ${req.session.present.name}
-현재 카드 의미 ("${presentMeaning.meanings.join(', ')}")
+현재 카드 의미 ("${presentMeaning.meaning}"
 
 미래 카드: ${req.session.future.name}
-미래 카드 의미 ("${futureMeaning.meanings.join(', ')}")
+미래 카드 의미 ("${futureMeaning.meaning}"
 
 [지시사항]
 - 자연스러운 구어체로 3문단 이내 답변
@@ -209,13 +205,77 @@ app.post('/interpret', async (req, res) => {
     }
 });
 
-app.post('/reset', (req, res) => {
-    req.session.question = '';
-    req.session.past = null;
-    req.session.present = null;
-    req.session.future = null;
-    req.session.interpretation = null;
-    return res.json({ success: true });
+// POST /api/deepseek - forward prompt to DeepSeek API
+app.post('/api/deepseek', async (req, res) => {
+    const deepseek_api_key = process.env.DEEPSEEK_API_KEY;
+    const prompt = req.body.prompt;
+    try {
+        const payload = {
+            model: "deepseek-chat",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7,
+            max_tokens: 500
+        };
+        const response = await axios.post("https://api.deepseek.com/v1/chat/completions", payload, {
+            headers: {
+                "Authorization": `Bearer ${deepseek_api_key}`,
+                "Content-Type": "application/json"
+            }
+        });
+        const result = response.data.choices[0].message.content;
+        res.json({ success: true, response: result });
+    } catch (error) {
+        res.json({ success: false, error: error.toString() });
+    }
+});
+
+// POST /test-api - Test DeepSeek API connection
+app.post('/test-api', async (req, res) => {
+    try {
+        const deepseek_api_key = process.env.DEEPSEEK_API_KEY;
+        console.log("Testing API connection with key:", deepseek_api_key.substring(0, 5) + "...");
+        
+        const testPayload = {
+            model: "deepseek-chat",
+            messages: [{ 
+                role: "user", 
+                content: "Say 'Hello' in Korean" 
+            }],
+            temperature: 0.7,
+            max_tokens: 50
+        };
+
+        const response = await axios.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            testPayload,
+            {
+                headers: {
+                    "Authorization": `Bearer ${deepseek_api_key}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        console.log("Full API Response:", JSON.stringify(response.data, null, 2));
+        
+        return res.json({
+            success: true,
+            message: "API test successful",
+            response: response.data
+        });
+    } catch (error) {
+        console.error("API Test Error Details:", {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+        });
+        
+        return res.json({
+            success: false,
+            error: error.message,
+            details: error.response?.data
+        });
+    }
 });
 
 // POST /set-question
