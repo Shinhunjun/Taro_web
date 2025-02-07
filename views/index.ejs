@@ -162,10 +162,11 @@
 <body class="container py-5">
     <!-- Header -->
     <div class="text-center mb-5">
-        <h1 class="main-title">
+        <h1 class="display-6 text-center">
             <span class="emoji-original">🔮</span> 
-            <span class="non-transparent">카드</span>를 뽑는것 조차... 너의 <span class="non-transparent">선택</span>일텐데...
-          </h1>
+            <span class="non-transparent">카드</span>를 뽑는것 조차... 너의 
+            <span class="non-transparent">선택</span>일텐데...
+        </h1>
         <hr class="my-4">
     </div>
 
@@ -183,18 +184,30 @@
     </div>
 
 <!-- Question Form -->
-<div class="text-center mb-5">
-    <form id="interpretForm">
-        <input type="text" 
-               id="userQuestion" 
-               class="question-input" 
-               placeholder="예: 나의 진로는 어떻게 될까요?"
-               value="<%= question ? question : '' %>">
-    </form>
-    <p class="mt-2" style="font-size: 1rem; color: #fff; font-weight: bold; background-color: rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 5px;">
-        질문을 먼저 입력하고 밑에서 3장의 카드를 각각 뽑아주세요.
-    </p>
-</div>
+<div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-3">
+        <h1 class="display-6">
+          <span class="emoji-original">🔮</span> 
+          <span class="non-transparent">카드</span>를 뽑는것 조차... 너의 
+          <span class="non-transparent">선택</span>일텐데...
+        </h1>
+        <hr class="my-2">
+      </div>
+      <div class="col-12 text-center mb-3">
+        <form id="interpretForm">
+          <input type="text" 
+                 id="userQuestion" 
+                 class="form-control" 
+                 placeholder="예: 나의 진로는 어떻게 될까요?" 
+                 value="<%= question ? question : '' %>">
+        </form>
+        <p class="mt-2 fs-6 fw-bold bg-light text-dark p-2 rounded">
+          질문을 먼저 입력하고 밑에서 3장의 카드를 각각 뽑아주세요.
+        </p>
+      </div>
+    </div>
+  </div>
 
     <!-- Cards Section -->
     <div class="row justify-content-center g-4 mb-5">
