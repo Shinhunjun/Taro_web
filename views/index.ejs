@@ -271,21 +271,30 @@
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Automatically keep question in session
-        document.getElementById("userQuestion").addEventListener("input", function() {
+        document.getElementById("userQuestion").addEventListener("input", async function() {
             const q = this.value.trim();
             const buttons = document.querySelectorAll(".card-btn");
             if (q !== "") {
                 buttons.forEach(btn => btn.removeAttribute("disabled"));
             } else {
-                buttons.forEach(btn => btn.setAttribute("disabled", true));
+                buttons.forEach(btn => {
+                    btn.setAttribute("disabled", true);
+                });
+                // Reset session and reload page only when question is empty
+                await fetch('/reset', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                window.location.reload();
+                return; // Exit the function to prevent further execution
             }
-            fetch('/set-question', {
+            await fetch('/set-question', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: q })
             });
         });
+    
 
         // Intercept form submission for interpretation
         document.getElementById("interpretForm").addEventListener("submit", async function(e) {
@@ -350,6 +359,8 @@
                 btn.disabled = false;
             }
         });
+
+
     </script>
 </body>
 </html>
