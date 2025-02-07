@@ -20,8 +20,8 @@ app.use(session({
 }));
 
 // Tarot data & cards folder
-const tarotJsonPath = "/Users/hunjunsin/Desktop/taro/tarot-images.json";
-const cardsFolder = "/Users/hunjunsin/Desktop/taro/cards";
+const tarotJsonPath = path.join(__dirname, 'tarot-images.json');
+const cardsFolder = path.join(__dirname, 'cards');
 const tarotData = JSON.parse(fs.readFileSync(tarotJsonPath, 'utf8'));
 const allCards = tarotData["cards"];
 
@@ -287,7 +287,7 @@ app.post('/reset', (req, res) => {
       res.status(200).send('세션 삭제 성공');
     });
   });
-  
+
 // POST /set-question
 app.post('/set-question', (req, res) => {
     req.session.question = req.body.question?.trim() || '';
