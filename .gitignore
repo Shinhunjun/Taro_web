@@ -1,0 +1,16 @@
+# filepath: /Users/hunjunsin/Desktop/taro/.gitignore
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS generated files
+.DS_Store
+
+# 기타 무시할 파일 및 디렉토리 추가
